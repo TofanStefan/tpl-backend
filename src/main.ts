@@ -27,7 +27,7 @@ async function bootstrap() {
     }),
   );
 
-  const port = process.env.NODE_ENV === 'development' ? 3000 : 80;
+  const port = process.env.NODE_ENV === 'development' ? 3000 : 8080;
   await app.listen(port);
   logger.log(`Server running on port ${port}`);
 }
