@@ -12,11 +12,12 @@ import { AuthService } from './Services/auth.service';
 import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './AuthStrategies/local.strategy';
 import { SessionSerializer } from './AuthStrategies/session.serializer';
+import { Session } from './Entities/session.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(DatabaseConfiguration),
-    TypeOrmModule.forFeature([user]),
+    TypeOrmModule.forFeature([user, Session]),
     ConfigModule.forRoot({ isGlobal: true }),
     PassportModule.register({ session: true }),
   ],
