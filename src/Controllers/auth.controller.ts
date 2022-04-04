@@ -35,4 +35,10 @@ export class AuthController {
   async register(@Body() user: CreateUserDto) {
     return await this.userService.create(user);
   }
+  @UseGuards(AuthenticatedGuard)
+  @Get('logout')
+  async logout(@Request() req): Promise<any> {
+    req.logout();
+    return { message: 'logged out' };
+  }
 }

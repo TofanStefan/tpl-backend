@@ -13,21 +13,30 @@ import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './AuthStrategies/local.strategy';
 import { SessionSerializer } from './AuthStrategies/session.serializer';
 import { Session } from './Entities/session.entity';
+import { subscription } from './Entities/subscription.entity';
+import { SubscriptionController } from './Controllers/subscription.controller';
+import { SubscriptionService } from './Services/subscription.service';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(DatabaseConfiguration),
-    TypeOrmModule.forFeature([user, Session]),
+    TypeOrmModule.forFeature([user, subscription, Session]),
     ConfigModule.forRoot({ isGlobal: true }),
     PassportModule.register({ session: true }),
   ],
-  controllers: [AppController, UserController, AuthController],
+  controllers: [
+    AppController,
+    UserController,
+    AuthController,
+    SubscriptionController,
+  ],
   providers: [
     AppService,
     UserService,
     AuthService,
     LocalStrategy,
     SessionSerializer,
+    SubscriptionService,
   ],
 })
 export class AppModule {}

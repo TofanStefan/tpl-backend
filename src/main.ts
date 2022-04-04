@@ -15,7 +15,7 @@ async function bootstrap() {
   const data = dotenv.parse(fs.readFileSync(`.${environment}.env`)) as any;
   const logger: Logger = new Logger('BOOTSTRAP');
   const app = await NestFactory.create(AppModule, {
-    cors: { origin: 'http://localhost:8080', credentials: true },
+    cors: { origin: 'http://localhost:3000', credentials: true },
   });
   const sessionRepo = getRepository(SessionEntity);
   const hour = 3600000;
@@ -40,7 +40,7 @@ async function bootstrap() {
     }),
   );
 
-  const port = process.env.NODE_ENV === 'development' ? 3000 : 8080;
+  const port = process.env.NODE_ENV === 'development' ? 5100 : 8080;
   await app.listen(port);
   logger.log(`Server running on port ${port}`);
 }
