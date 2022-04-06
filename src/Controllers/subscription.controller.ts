@@ -12,7 +12,7 @@ export class SubscriptionController {
   async GetAll() {
     return await this.subscriptionService.getAll();
   }
-  @Post()
+  @Post('update')
   async Update(@Body() body) {
     return await this.subscriptionService.update(body);
   }
