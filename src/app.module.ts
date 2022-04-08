@@ -16,11 +16,15 @@ import { Session } from './Entities/session.entity';
 import { subscription } from './Entities/subscription.entity';
 import { SubscriptionController } from './Controllers/subscription.controller';
 import { SubscriptionService } from './Services/subscription.service';
+import { route } from './Entities/route.entity';
+import { station } from './Entities/station.entity';
+import { RouteController } from './Controllers/routes.controller';
+import { RouteService } from './Services/routes.service';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(DatabaseConfiguration),
-    TypeOrmModule.forFeature([user, subscription, Session]),
+    TypeOrmModule.forFeature([user, subscription, Session, route, station]),
     ConfigModule.forRoot({ isGlobal: true }),
     PassportModule.register({ session: true }),
   ],
@@ -29,6 +33,7 @@ import { SubscriptionService } from './Services/subscription.service';
     UserController,
     AuthController,
     SubscriptionController,
+    RouteController,
   ],
   providers: [
     AppService,
@@ -37,6 +42,7 @@ import { SubscriptionService } from './Services/subscription.service';
     LocalStrategy,
     SessionSerializer,
     SubscriptionService,
+    RouteService,
   ],
 })
 export class AppModule {}
