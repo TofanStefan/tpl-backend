@@ -50,20 +50,16 @@ export class RouteService {
   }
 
   async getRoutesByStations(start, end) {
-    const stations = await this.station_entity.find({
-      where: { name: In([start, end]) },
-      relations: ['route'],
-    });
-
-    // if found duplicates we should retunr the bus/line number
     const busses = [];
-
-    stations.forEach((station) => {
-      if (!busses.includes(station.route.number)) {
-        let filteredInstances = stations.filter(
-          (st) => (st.route.number = station.route.number),
-        );
-        if (filteredInstances.length > 1) busses.push(station.route.number);
+    const routes = await this.route_entity.find({
+      relations: ['stations'],
+    });
+    routes.forEach((route) => {
+      // find station
+      const findStart = route.stations.find((value) => value.name === start);
+      const findEnd = route.stations.find((value) => value.name === end);
+      if (findStart && findEnd) {
+        busses.push(route.number);
       }
     });
     return busses;
