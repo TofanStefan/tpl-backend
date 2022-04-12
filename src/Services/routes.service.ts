@@ -35,7 +35,7 @@ export class RouteService {
     });
     await this.route_entity.save(
       this.route_entity.create({
-        number: 28,
+        number: 5,
         stations,
       }),
     );
@@ -70,9 +70,71 @@ export class RouteService {
   }
 
   async getRoutes(id) {
-    return await this.route_entity.findOne({
+    let polyUtil = require('polyline-encoded');
+    const googleMapsClient = require('@google/maps').createClient({
+      key: 'AIzaSyAeSsi_FfVyInpDce0WXkmCdsoK4hz9Ta0',
+      Promise: Promise,
+    });
+    let latlngs = null;
+    const data = await this.route_entity.findOne({
       where: { number: id },
       relations: ['stations'],
     });
+
+    let last_order = 0;
+    const extra_option = [];
+    const waypoints = [];
+    const used_names = [];
+    data.stations.map((station, index) => {
+      if (waypoints.length <= 23) {
+        if (!used_names.includes(station.name)) {
+          last_order = index;
+          used_names.push(station.name);
+          waypoints.push({
+            lat: station.lat,
+            lng: station.lng,
+          });
+
+          extra_option.push({
+            id: station.id,
+            name: station.name,
+            order: station.order,
+            lat: station.lat,
+            lng: station.lng,
+          });
+        }
+      }
+    });
+    //data.stations = extra_option;
+    console.log(data.stations);
+    const len = waypoints.length - 1;
+    console.log('waaa', waypoints);
+    waypoints.push({
+      lat: data.stations[last_order + 1].lat,
+      lng: data.stations[last_order + 1].lng,
+    });
+    await googleMapsClient
+      .directions({
+        destination: { lat: waypoints[0].lat, lng: waypoints[0].lng },
+        origin: { lat: waypoints[0].lat, lng: waypoints[0].lng },
+        waypoints: waypoints,
+      })
+      .asPromise()
+      .then((response) => {
+        console.log(response);
+        let encoded = response.json.routes[0].overview_polyline.points;
+        latlngs = polyUtil.decode(encoded);
+
+        const path = latlngs.map((coord) => {
+          return {
+            lat: coord[0],
+            lng: coord[1],
+          };
+        });
+
+        data['path'] = path;
+      });
+
+    return data;
   }
 }
