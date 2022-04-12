@@ -102,9 +102,6 @@ export class RouteService {
       }
     });
     //data.stations = extra_option;
-    console.log(data.stations);
-    const len = waypoints.length - 1;
-    console.log('waaa', waypoints);
     waypoints.push({
       lat: data.stations[last_order + 1].lat,
       lng: data.stations[last_order + 1].lng,
@@ -117,7 +114,6 @@ export class RouteService {
       })
       .asPromise()
       .then((response) => {
-        console.log(response);
         let encoded = response.json.routes[0].overview_polyline.points;
         latlngs = polyUtil.decode(encoded);
 
