@@ -20,22 +20,26 @@ export class RouteService {
 
   async createRoute(routes) {
     const stations: station[] = [];
+    const used = [];
     routes.forEach((route, index) => {
       const split = route.split(' - ');
       const name = split[0];
       const coord = split[1].split(', ');
-      stations.push(
-        this.station_entity.create({
-          name,
-          lat: coord[0],
-          lng: coord[1],
-          order: index + 1,
-        }),
-      );
+      if (!used.includes(name)) {
+        stations.push(
+          this.station_entity.create({
+            name,
+            lat: coord[0],
+            lng: coord[1],
+            order: index + 1,
+          }),
+        );
+        used.push(name);
+      }
     });
     await this.route_entity.save(
       this.route_entity.create({
-        number: 5,
+        number: 28,
         stations,
       }),
     );
@@ -66,7 +70,9 @@ export class RouteService {
   }
 
   async getRoutes(id) {
-    let polyUtil = require('polyline-encoded');
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const polyUtil = require('polyline-encoded');
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const googleMapsClient = require('@google/maps').createClient({
       key: 'AIzaSyAeSsi_FfVyInpDce0WXkmCdsoK4hz9Ta0',
       Promise: Promise,
@@ -77,34 +83,24 @@ export class RouteService {
       relations: ['stations'],
     });
 
-    let last_order = 0;
-    const extra_option = [];
     const waypoints = [];
     const used_names = [];
-    data.stations.map((station, index) => {
-      if (waypoints.length <= 23) {
+    data.stations.map((station) => {
+      if (waypoints.length <= 24) {
         if (!used_names.includes(station.name)) {
-          last_order = index;
-          used_names.push(station.name);
-          waypoints.push({
-            lat: station.lat,
-            lng: station.lng,
-          });
-
-          extra_option.push({
-            id: station.id,
-            name: station.name,
-            order: station.order,
-            lat: station.lat,
-            lng: station.lng,
-          });
+          if (
+            (data.number === 3 &&
+              ['Sala Sporturilor', 'IRIC'].includes(station.name)) ||
+            (data.number === 5 && station.name === 'Selgros')
+          ) {
+          } else {
+            waypoints.push({
+              lat: station.lat,
+              lng: station.lng,
+            });
+          }
         }
       }
-    });
-    //data.stations = extra_option;
-    waypoints.push({
-      lat: data.stations[last_order + 1].lat,
-      lng: data.stations[last_order + 1].lng,
     });
     await googleMapsClient
       .directions({
@@ -114,7 +110,7 @@ export class RouteService {
       })
       .asPromise()
       .then((response) => {
-        let encoded = response.json.routes[0].overview_polyline.points;
+        const encoded = response.json.routes[0].overview_polyline.points;
         latlngs = polyUtil.decode(encoded);
 
         const path = latlngs.map((coord) => {
