@@ -28,4 +28,7 @@ export class user {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @Column({ default: 'user' })
+  role: string;
 }
