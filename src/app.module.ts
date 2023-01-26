@@ -23,26 +23,13 @@ import { RouteService } from './Services/routes.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot(DatabaseConfiguration),
-    TypeOrmModule.forFeature([user, subscription, Session, route, station]),
-    ConfigModule.forRoot({ isGlobal: true }),
-    PassportModule.register({ session: true }),
   ],
   controllers: [
     AppController,
-    UserController,
-    AuthController,
-    SubscriptionController,
-    RouteController,
+
   ],
   providers: [
     AppService,
-    UserService,
-    AuthService,
-    LocalStrategy,
-    SessionSerializer,
-    SubscriptionService,
-    RouteService,
   ],
 })
 export class AppModule {}
